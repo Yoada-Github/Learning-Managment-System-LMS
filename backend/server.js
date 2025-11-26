@@ -6,6 +6,7 @@ import connectDB from "./config/db.js"; // only import once
 import authRoutes from "./routes/authRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import progressRoutes from "./routes/progressRoutes.js";
+import enrollmentRoutes from "./routes/enrollmentRoutes.js"
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/courses", courseRoutes);
 app.use("/progress", progressRoutes);
-
+app.use("/enrollment",enrollmentRoutes)
 // Start server and connect to DB
 const startServer = async () => {
   try {

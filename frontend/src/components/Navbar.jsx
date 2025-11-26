@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -12,16 +12,20 @@ const Navbar = () => {
   const isActive = (path) =>
     location.pathname === path ? "text-primary fw-bold" : "text-dark";
 
+  // function to logout to home page
+  const handleLogout = () => {
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = "/login";
+};
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
       <div className="container py-2">
-        {/* Brand */}
         <Link to="/" className="navbar-brand d-flex align-items-center fw-bold fs-4 text-primary">
           <i className="bi bi-mortarboard-fill me-2 text-primary"></i>
           LMS<span className="text-dark ms-1">LEARN</span>
         </Link>
-
-        {/* Mobile Toggle */}
         <button
           className="navbar-toggler border-0"
           type="button"
@@ -38,12 +42,10 @@ const Navbar = () => {
         <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
           <ul className="navbar-nav align-items-lg-center gap-lg-3">
             <li className="nav-item">
-              <Link className={`nav-link ${isActive("/")}`} to="/">
-              <i className="bi bi-people-fill me-1"></i>
+              <Link className={`nav-link ${isActive("/")}`} to="/"> <i className="bi bi-people-fill me-1"></i>
                 Home
               </Link>
             </li>
-
             <li className="nav-item">
               <Link className={`nav-link ${isActive("/courses")}`} to="/courses">
                 Courses
@@ -63,10 +65,7 @@ const Navbar = () => {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <button
-                    className="btn btn-outline-danger btn-sm px-3 ms-lg-2"
-                    onClick={logout}
-                  >
+                  <button className="btn btn-outline-danger btn-sm px-3 ms-lg-2" onClick={handleLogout}>
                     <i className="bi bi-box-arrow-right me-1"></i> Logout
                   </button>
                 </li>

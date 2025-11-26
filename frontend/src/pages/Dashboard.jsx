@@ -5,38 +5,14 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Dashboard = () => {
-  const [courses, setCourses] = useState([
-    {
-      _id: "1",
-      name: "Frontend Development with React",
-      students: 120,
-      price: 24000,
-    },
-    {
-      _id: "2",
-      name: "Backend Development with Node.js",
-      students: 95,
-      price: 19000,
-    },
-    {
-      _id: "3",
-      name: "Full Stack MERN Mastery",
-      students: 80,
-      price: 16000,
-    },
-    {
-      _id: "4",
-      name: "UI/UX Design Essentials",
-      students: 60,
-      price: 9000,
-    },
-  ]);
+  const [courses, setCourses] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch or mock courses
+  // Fetch courses and enrollment data
   useEffect(() => {
-    // Temporary mock data – replace with backend API later
     fetchCourses();
+    fetchEnrollments();
   }, []);
 
   const fetchCourses = async () => {
@@ -48,67 +24,98 @@ const Dashboard = () => {
     }
   };
 
-  // 👇 Navigate to Create Course Page
-  const handleAddCourse = () => {
-    navigate("/create");
-  };
-
-  const handleEdit = (id) => {
-    navigate(`/edit/${id}`); // navigate to edit page
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this course?")) {
-      setCourses(courses.filter((course) => course._id !== id));
+  const fetchEnrollments = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/enrollments");
+      setEnrollments(res.data);
+    } catch (err) {
+      console.error("Error fetching enrollments:", err);
     }
   };
 
+  const handleAddCourse = () => navigate("/create");
+  const handleEdit = (id) => navigate(`/edit/${id}`);
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this course?")) {
+      try {
+        await axios.delete(`http://localhost:5000/courses/${id}`);
+        setCourses(courses.filter((course) => course._id !== id));
+      } catch (error) {
+        console.error("Error deleting course:", error);
+      }
+    }
+  };
+
+  // 🧮 Calculate stats
+  const totalStudents = enrollments.length;
+  const totalRevenue = enrollments.reduce((sum, e) => sum + (e.price || 0), 0);
+
+  const getStudentsForCourse = (courseId) =>
+    enrollments.filter((enroll) => enroll.courseId === courseId).length;
+
   return (
-    <div className="container-fluid mt-4">
+    <div
+      className="container-fluid py-4"
+      style={{ backgroundColor: "#f9fafb", minHeight: "100vh" }}
+    >
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fw-bold text-primary mb-0">
-          <i className="bi bi-speedometer2 me-2"></i>Dashboard Overview
-        </h2>
-        <button className="btn btn-success" onClick={handleAddCourse}>
+        <div>
+          <h2 className="fw-bold text-dark mb-1">
+            <i className="bi bi-speedometer2 text-primary me-2"></i>
+            Dashboard Overview
+          </h2>
+          <p className="text-muted small mb-0">
+            Manage your courses and track student enrollments
+          </p>
+        </div>
+        <button
+          className="btn btn-primary px-4 py-2 shadow-sm rounded-pill"
+          onClick={handleAddCourse}
+        >
           <i className="bi bi-plus-circle me-2"></i>Add New Course
         </button>
       </div>
 
       {/* Courses Table */}
-      <div className="card shadow-sm border-1">
-        <div className="card-body">
+      <div className="card shadow-sm border-0 mb-5 rounded-4">
+        <div className="card-body p-0">
           <div className="table-responsive">
-            <table className="table table-striped table-hover align-middle">
-              <thead className="table-dark">
+            <table className="table align-middle table-hover mb-0">
+              <thead className="bg-secondary text-white">
                 <tr>
-                  <th>ID</th>
-                  <th>Course Catagories</th>
+                  <th className="ps-4">#</th>
                   <th>Course Name</th>
-                  <th>Students</th>
-                  <th>price (ETB)</th>
-                  <th>Actions</th>
+                  <th>Category</th>
+                  <th>Enrolled Students</th>
+                  <th>Price (ETB)</th>
+                  <th className="text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {courses.map((course, index) => (
-                  <tr key={index}>
-                    <td>{index + 1 || "0"}</td>
-                    <td>{course.name || "N/A"}</td>
+                  <tr key={course._id}>
+                    <td className="ps-4 fw-semibold">{index + 1}</td>
+                    <td className="fw-medium">{course.name || "N/A"}</td>
                     <td>{course.category || "N/A"}</td>
-                    <td>{course.students ?? 0}</td>
-                    <td>
+                    <td>{getStudentsForCourse(course._id)}</td>
+                    <td className="fw-semibold text-success">
                       {course.price
                         ? `${course.price.toLocaleString()} ETB`
                         : "0 ETB"}
                     </td>
-                    <td>
-                      <button className="btn btn-sm btn-primary me-2"
-                      onClick={() => handleEdit(course._id)}>
+                    <td className="text-center">
+                      <button
+                        className="btn btn-sm btn-outline-primary me-2 rounded-pill"
+                        onClick={() => handleEdit(course._id)}
+                      >
                         <i className="bi bi-pencil"></i>
                       </button>
-                      <button className="btn btn-sm btn-danger"
-                      onClick={() => handleDelete(course._id)}>
+                      <button
+                        className="btn btn-sm btn-outline-danger rounded-pill"
+                        onClick={() => handleDelete(course._id)}
+                      >
                         <i className="bi bi-trash"></i>
                       </button>
                     </td>
@@ -121,27 +128,33 @@ const Dashboard = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="row mt-4 g-3">
+      <div className="row g-4">
         <div className="col-md-4">
-          <div className="card text-center p-3 shadow-sm border-0">
-            <h6 className="text-secondary">Total Courses</h6>
-            <h3 className="fw-bold">{courses.length}</h3>
+          <div className="card text-center border-0 shadow-sm rounded-4 p-4 h-100">
+            <div className="text-primary fs-2 mb-2">
+              <i className="bi bi-book-fill"></i>
+            </div>
+            <h6 className="text-muted">Total Courses</h6>
+            <h3 className="fw-bold text-dark">{courses.length}</h3>
           </div>
         </div>
         <div className="col-md-4">
-          <div className="card text-center p-3 shadow-sm border-0">
-            <h6 className="text-secondary">Total Students</h6>
-            <h3 className="fw-bold">
-              {courses.reduce((acc, c) => acc + c.students, 0)}
-            </h3>
+          <div className="card text-center border-0 shadow-sm rounded-4 p-4 h-100">
+            <div className="text-warning fs-2 mb-2">
+              <i className="bi bi-people-fill"></i>
+            </div>
+            <h6 className="text-muted">Total Students</h6>
+            <h3 className="fw-bold text-dark">{totalStudents}</h3>
           </div>
         </div>
         <div className="col-md-4">
-          <div className="card text-center p-3 shadow-sm border-0">
-            <h6 className="text-secondary">Total Price</h6>
+          <div className="card text-center border-0 shadow-sm rounded-4 p-4 h-100">
+            <div className="text-success fs-2 mb-2">
+              <i className="bi bi-currency-exchange"></i>
+            </div>
+            <h6 className="text-muted">Total Revenue</h6>
             <h3 className="fw-bold text-success">
-              ETB{" "}
-              {courses.reduce((acc, c) => acc + c.price, 0).toLocaleString()}
+              ETB {totalRevenue.toLocaleString()}
             </h3>
           </div>
         </div>

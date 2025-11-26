@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import BackButton from "../components/BackButton"; // ✅ Fixed import
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext"; // ✅ for user auth
 
-const CoursesDetail = () => {
+const CourseDetail = () => {
   const { id } = useParams();
   const [course, setCourse] = useState({});
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -20,9 +25,39 @@ const CoursesDetail = () => {
     fetchCourse();
   }, [id]);
 
+  // ✅ Handle enrollment
+  const handleEnroll = async () => {
+    if (!user) {
+      alert("Please login or register before enrolling.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token"); // from login
+      const res = await axios.post("http://localhost:5000/enrollment/enroll/:id",
+        {
+          courseId: course._id,
+          userId: user._id,
+          price: course.price,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      alert("✅ Enrollment successful!");
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Error enrolling:", err);
+      alert("⚠️ Failed to enroll. Please try again.");
+    }
+  };
+
   return (
     <div className="container my-5">
       <BackButton />
+
       <div className="row align-items-start g-4 mb-5">
         <div className="col-lg-7">
           <div className="ratio ratio-16x9 shadow-sm rounded overflow-hidden">
@@ -63,11 +98,12 @@ const CoursesDetail = () => {
               <h2 className="fw-bold mb-1">{course.name}</h2>
               <p className="mb-0">
                 <i className="bi bi-folder-fill me-2 text-warning"></i>
-                {course.category}
+                {course.category || "Uncategorized"}
               </p>
             </div>
+
             <p className="fs-6 lh-base text-secondary mb-4">
-              {course.description}
+              {course.description || "No description available."}
             </p>
 
             {/* Details */}
@@ -92,7 +128,7 @@ const CoursesDetail = () => {
               </h6>
             </div>
 
-            {/* Enroll Button */}
+            {/* ✅ Enroll Button */}
             <button
               className="btn w-100 fw-bold text-white"
               style={{
@@ -102,8 +138,10 @@ const CoursesDetail = () => {
                 padding: "12px",
                 fontSize: "1.05rem",
               }}
+              onClick={handleEnroll}
             >
-              <i className="bi bi-play-circle me-2"></i>Enroll Now
+              <i className="bi bi-play-circle me-2"></i>
+              Enroll Now
             </button>
           </div>
         </div>
@@ -112,4 +150,4 @@ const CoursesDetail = () => {
   );
 };
 
-export default CoursesDetail;
+export default CourseDetail;

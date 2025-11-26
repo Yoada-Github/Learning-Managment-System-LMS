@@ -8,6 +8,15 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
+router.get("/stats", async (req, res) => {
+  try {
+    const totalStudents = await User.countDocuments({ role: "student" });
+    res.json({ totalStudents });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
