@@ -17,24 +17,17 @@ router.post("/", protect, async (req, res) => {
 });
 
 // Enroll a student
-router.post("/enroll/:id", protect, async (req, res) => {
-  try {
-    const course = await Course.findById(req.params.id);
-    const userId = req.user._id;
+router.post("/enroll", protect, async (req, res) => {
+  const { userId, courseId } = req.body;
 
-    if (!course) return res.status(404).json({ message: "Course not found" });
+  // If already enrolled
+  const exist = await Enrollment.findOne({ userId, courseId });
+  if (exist) return res.json({ message: "Already enrolled" });
 
-    if (course.enrolledStudents.includes(userId)) {
-      return res.status(400).json({ message: "Already enrolled" });
-    }
+  const enroll = new Enrollment({ userId, courseId, date: new Date() });
+  await enroll.save();
 
-    course.enrolledStudents.push(userId);
-    await course.save();
-
-    res.json({ message: "Enrollment successful" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+  res.json({ message: "Enrollment successful" });
 });
 
 // GET all enrollments

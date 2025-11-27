@@ -35,7 +35,7 @@ const CourseDetail = () => {
 
     try {
       const token = localStorage.getItem("token"); // from login
-      const res = await axios.post("http://localhost:5000/enrollment/enroll/:id",
+      const res = await axios.post("http://localhost:5000/enrollment/enroll",
         {
           courseId: course._id,
           userId: user._id,

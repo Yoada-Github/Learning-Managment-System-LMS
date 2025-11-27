@@ -25,8 +25,8 @@ const Dashboard = () => {
   };
 
   const fetchEnrollments = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/enrollments");
+    try { 
+      const res = await axios.get("http://localhost:5000/enrollment");
       setEnrollments(res.data);
     } catch (err) {
       console.error("Error fetching enrollments:", err);
@@ -47,9 +47,19 @@ const Dashboard = () => {
     }
   };
 
-  // 🧮 Calculate stats
-  const totalStudents = enrollments.length;
-  const totalRevenue = enrollments.reduce((sum, e) => sum + (e.price || 0), 0);
+// compute once per render
+  const totalStudents = courses.reduce((sum, course) => {
+    const n = Number(course.students) || 0; // guard if undefined or string
+    return sum + n;
+  }, 0);
+
+// compute once per render
+  const totalRevenue = courses.reduce((sum, course) => {
+    const n = Number(course.price) || 0; // guard if undefined or string
+    return sum + n;
+  }, 0);
+
+  const totalEnrolled = enrollments.length;
 
   const getStudentsForCourse = (courseId) =>
     enrollments.filter((enroll) => enroll.courseId === courseId).length;
@@ -66,9 +76,6 @@ const Dashboard = () => {
             <i className="bi bi-speedometer2 text-primary me-2"></i>
             Dashboard Overview
           </h2>
-          <p className="text-muted small mb-0">
-            Manage your courses and track student enrollments
-          </p>
         </div>
         <button
           className="btn btn-primary px-4 py-2 shadow-sm rounded-pill"
@@ -83,14 +90,15 @@ const Dashboard = () => {
         <div className="card-body p-0">
           <div className="table-responsive">
             <table className="table align-middle table-hover mb-0">
-              <thead className="bg-secondary text-white">
-                <tr>
-                  <th className="ps-4">#</th>
-                  <th>Course Name</th>
-                  <th>Category</th>
-                  <th>Enrolled Students</th>
-                  <th>Price (ETB)</th>
-                  <th className="text-center">Actions</th>
+              <thead className="text-white">
+                <tr className="bg-dark">
+                  <th className="ps-4 bg-dark text-white">#</th>
+                  <th className="ps-4 bg-dark text-white">Course Name</th>
+                  <th className="ps-4 bg-dark text-white">Category</th>
+                  <th className="ps-4 bg-dark text-white">Number of Students</th>
+                  <th className="ps-4 bg-dark text-white">Enrolled Students</th>
+                  <th className="ps-4 bg-dark text-white">Price (ETB)</th>
+                  <th className="ps-4 bg-dark text-white text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -99,6 +107,7 @@ const Dashboard = () => {
                     <td className="ps-4 fw-semibold">{index + 1}</td>
                     <td className="fw-medium">{course.name || "N/A"}</td>
                     <td>{course.category || "N/A"}</td>
+                    <td>{course.students}</td>
                     <td>{getStudentsForCourse(course._id)}</td>
                     <td className="fw-semibold text-success">
                       {course.price
@@ -129,7 +138,7 @@ const Dashboard = () => {
 
       {/* Summary Cards */}
       <div className="row g-4">
-        <div className="col-md-4">
+        <div className="col-md-3">
           <div className="card text-center border-0 shadow-sm rounded-4 p-4 h-100">
             <div className="text-primary fs-2 mb-2">
               <i className="bi bi-book-fill"></i>
@@ -138,7 +147,7 @@ const Dashboard = () => {
             <h3 className="fw-bold text-dark">{courses.length}</h3>
           </div>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-3">
           <div className="card text-center border-0 shadow-sm rounded-4 p-4 h-100">
             <div className="text-warning fs-2 mb-2">
               <i className="bi bi-people-fill"></i>
@@ -147,14 +156,23 @@ const Dashboard = () => {
             <h3 className="fw-bold text-dark">{totalStudents}</h3>
           </div>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-3">
+          <div className="card text-center border-0 shadow-sm rounded-4 p-4 h-100">
+            <div className="text-warning fs-2 mb-2">
+              <i className="bi bi-people-fill"></i>
+            </div>
+            <h6 className="text-muted">Total Enrolled</h6>
+            <h3 className="fw-bold text-dark">{totalEnrolled}</h3>
+          </div>
+        </div>
+        <div className="col-md-3">
           <div className="card text-center border-0 shadow-sm rounded-4 p-4 h-100">
             <div className="text-success fs-2 mb-2">
               <i className="bi bi-currency-exchange"></i>
             </div>
             <h6 className="text-muted">Total Revenue</h6>
             <h3 className="fw-bold text-success">
-              ETB {totalRevenue.toLocaleString()}
+              ETB {totalRevenue}
             </h3>
           </div>
         </div>
