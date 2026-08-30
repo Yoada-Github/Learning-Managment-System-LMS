@@ -56,7 +56,7 @@ const CourseDetail = () => {
 
   return (
     <div className="container my-5">
-      <BackButton />
+      <backButton />
 
       <div className="row align-items-start g-4 mb-5">
         <div className="col-lg-7">
