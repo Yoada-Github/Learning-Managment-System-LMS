@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import BackButton from "../components/BackButton"; // ✅ Fixed import
+import backButton from "../components/BackButton"; // ✅ Fixed import
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext"; // ✅ for user auth
 

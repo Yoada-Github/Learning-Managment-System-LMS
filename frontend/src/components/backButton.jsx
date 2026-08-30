@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../index.css";
 
-const BackButton = () => {
+const backButton = () => {
   const navigate = useNavigate();
 
   return (
@@ -13,4 +13,4 @@ const BackButton = () => {
   );
 };
 
-export default BackButton;
+export default backButton;
