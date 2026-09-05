@@ -1,4 +1,3 @@
-// src/pages/EditCourse.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -7,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const EditCourse = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [course, setCourse] = useState({ name: "", students: "", revenue: "" });
+  const [course, setCourse] = useState({ name: "", students: "", revenue: "", category: "", price: "", description: "", imageUrl: "", videoUrl: "" });
 
   useEffect(() => {
     axios
@@ -23,7 +22,7 @@ const EditCourse = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .put(`http://localhost:5000/api/courses/${id}`, course)
+      .put(`http://localhost:5000/courses/${id}`, course)
       .then(() => {
         alert("Course updated successfully!");
         navigate("/dashboard");
@@ -69,6 +68,61 @@ const EditCourse = () => {
               value={course.revenue}
               onChange={handleChange}
               required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Category</label>
+            <input
+              type="text"
+              className="form-control"
+              name="category"
+              value={course.category}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Price (ETB)</label>
+            <input
+              type="number"
+              className="form-control"
+              name="price"
+              value={course.price}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Description</label>
+            <textarea
+              className="form-control"
+              name="description"
+              value={course.description}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Image URL</label>
+            <input
+              type="url"
+              className="form-control"
+              name="imageUrl"
+              value={course.imageUrl}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Video URL</label>
+            <input
+              type="url"
+              className="form-control"
+              name="videoUrl"
+              value={course.videoUrl}
+              onChange={handleChange}
             />
           </div>
 

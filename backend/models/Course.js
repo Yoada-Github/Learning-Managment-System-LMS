@@ -1,14 +1,41 @@
+
 import mongoose from "mongoose";
 
 const courseSchema = new mongoose.Schema({
-  name: String,
-  category: String,
-  description: String,
-  students: { type: Number, default: 0 },
-  duration: String,
-  level: String,
-  price: Number,
-  videoUrl: String,
+  name: {
+    type: String,
+    required: true,
+  },
+
+  category: {
+    type: String,
+  },
+
+  description: {
+    type: String,
+  },
+
+  students: {
+    type: Number,
+    default: 0,
+  },
+
+  duration:{
+    type: String,
+  },
+
+  level: {
+    type: String,
+  },
+
+  videoUrl: {
+    type: String,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+
   enrolledStudents: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -17,6 +44,4 @@ const courseSchema = new mongoose.Schema({
   ],
 });
 
-const Course = mongoose.model("Course", courseSchema);
-export default Course;
-
+export default mongoose.model("Course", courseSchema);

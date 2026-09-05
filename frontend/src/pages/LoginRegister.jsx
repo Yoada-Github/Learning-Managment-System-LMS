@@ -250,7 +250,7 @@ const LoginRegister = () => {
           >
             {loading
               ? isLogin
-                ? "Logging in..."
+                ? "Loggin..."
                 : "Creating Account..."
               : isLogin
               ? "Login"

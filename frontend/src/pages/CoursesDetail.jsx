@@ -25,34 +25,50 @@ const CourseDetail = () => {
     fetchCourse();
   }, [id]);
 
+  
   // ✅ Handle enrollment
   const handleEnroll = async () => {
-    if (!user) {
-      alert("Please login or register before enrolling.");
-      navigate("/login");
-      return;
-    }
+  if (!user) {
+    alert("Please login or register before enrolling.");
+    navigate("/login");
+    return;
+  }
 
-    try {
-      const token = localStorage.getItem("token"); // from login
-      const res = await axios.post("http://localhost:5000/enrollment/enroll",
-        {
-          courseId: course._id,
-          userId: user._id,
-          price: course.price,
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await axios.post(
+      "http://localhost:5000/enrollment/enroll",
+      {
+        courseId: course._id,
+        userId: user._id,
+        price: course.price,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      }
+    );
 
-      alert("✅ Enrollment successful!");
-      navigate("/dashboard");
-    } catch (err) {
-      console.error("Error enrolling:", err);
-      alert("⚠️ Failed to enroll. Please try again.");
-    }
-  };
+    console.log("Enrollment:", res.data);
+
+    alert("✅ Enrollment successful!");
+
+    navigate("/dashboard");
+
+  } catch (error) {
+    console.error(
+      "Enrollment error:",
+      error.response?.data || error.message
+    );
+
+    alert(
+      error.response?.data?.message ||
+      "Failed to enroll"
+    );
+  }
+};
 
   return (
     <div className="container my-5">
