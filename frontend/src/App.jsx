@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Topbar from "./components/Topbar";   // ← ADD THIS
 import Courses from "./pages/Courses";
 import CourseDetail from "./pages/CoursesDetail";
-// import Lesson from "./pages/Lesson";
 import Profile from "./pages/Profile";
 import ResetPassword from "./pages/ResetPassword";
 import LoginRegister from "./pages/LoginRegister";
@@ -14,36 +14,50 @@ import ForgotPassword from "./pages/ForgotPassward";
 import CreateCourse from "./pages/CreateCourse";
 import EditCourse from "./pages/EditCourse";
 import Home from "./pages/Home";
+import Assignments from "./pages/Assignments";
+import Certificates from "./pages/Certificates";
+import Messages from "./pages/Messages";
 
 const App = () => {
   return (
     <AuthProvider>
       <Router>
-        <div className="d-flex flex-column min-vh-100 bg-light">
-          <Navbar />
+        <Navbar />
 
-          {/* Main Content */}
-          <main className="flex-grow-1 container my-4">
+        <div
+          className="d-flex flex-column min-vh-100"
+          style={{
+            marginLeft: "260px",
+            backgroundColor: "#f8fafc",
+          }}
+        >
+          {/* TOP BAR WITH SEARCH */}
+          <Topbar />
+
+          {/* MAIN CONTENT */}
+          <main className="flex-grow-1 p-4">
             <Routes>
               {/* Public Routes */}
               <Route path="/login" element={<LoginRegister />} />
-              <Route path="/reset-password/:token"  element={<ResetPassword />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/create" element={<CreateCourse />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/courses" element={<Courses />} />
-              <Route path="/edit/:id" element={<EditCourse />} />
               <Route path="/" element={<Home />} />
 
-              {/*<Route path="/lesson/:id" element={<Lesson />} /> */}
-
-              {/* Protected Routes */}
+              {/* Course Routes */}
+              <Route path="/courses" element={<Courses />} />
               <Route path="/courses/:id" element={<CourseDetail />} />
+              <Route path="/create" element={<CreateCourse />} />
+              <Route path="/edit/:id" element={<EditCourse />} />
+
+              {/* User Routes */}
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/assignments" element={<Assignments />} />
+              <Route path="/certificates" element={<Certificates />} />
+              <Route path="/messages" element={<Messages />} />
             </Routes>
           </main>
 
-          {/* Footer */}
           <Footer />
         </div>
       </Router>
